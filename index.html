@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chord Detect</title>
+
+    <!--
+      Load Tonal.js as a UMD script.
+      This exposes a global `Tonal` object for music theory operations like detecting chords or scales.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/tonal/browser/tonal.min.js"></script>
+
+    <!--
+      Load our custom JavaScript logic using ES Modules.
+      This script should contain the logic for reading MIDI input and updating the page based on Tonal.js.
+    -->
+    <script type="module" src="chordDectectWithTonal.js"></script>
+</head>
+
+<body>
+    <!--
+      This <h1> element will be dynamically updated to show the detected chord
+      from the currently held MIDI notes.
+    -->
+    <h1 id="chord">Waiting for chord input...</h1>
+
+</body>
+</html>
