@@ -12,10 +12,23 @@ const chordDisplay = document.getElementById("chord");
  * @returns {string} Note name with octave
  */
 const midiToNote = (midi) => {
-    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    const note = notes[midi % 12];
-    const octave = Math.floor(midi / 12) - 1;
-    return `${note}${octave}`;
+  const notes = [
+    "C",
+    "C#",
+    "D",
+    "D#",
+    "E",
+    "F",
+    "F#",
+    "G",
+    "G#",
+    "A",
+    "A#",
+    "B",
+  ];
+  const note = notes[midi % 12];
+  const octave = Math.floor(midi / 12) - 1;
+  return `${note}${octave}`;
 };
 
 /**
@@ -25,16 +38,16 @@ const midiToNote = (midi) => {
  * @param {number} midi - MIDI note number
  * @returns {string} Pitch class (e.g. "D#", "A")
  */
-const midiToPitchClass = (midi) => midiToNote(midi).replace(/[0-9]/g, '');
+const midiToPitchClass = (midi) => midiToNote(midi).replace(/[0-9]/g, "");
 
 /**
  * Analyze currently held notes and display the most likely chord.
  * Uses Tonal.js chord detection on pitch classes derived from held MIDI notes.
  */
 const updateChord = () => {
-    const noteNames = heldNotes.map(midiToPitchClass);
-    const chords = Tonal.Chord.detect(noteNames);
-    chordDisplay.textContent = chords[0] || noteNames.join(" ");
+  const noteNames = heldNotes.map(midiToPitchClass);
+  const chords = Tonal.Chord.detect(noteNames);
+  chordDisplay.textContent = chords[0] || noteNames.join(" ");
 };
 
 /**
@@ -44,27 +57,27 @@ const updateChord = () => {
  * @param {MIDIMessageEvent} event - The incoming MIDI message event
  */
 const onMIDIMessage = (event) => {
-    const [status, note, velocity] = event.data;
-    const command = status & 0xf0;
+  const [status, note, velocity] = event.data;
+  const command = status & 0xf0;
 
-    switch (command) {
-        case 0x80: // Note Off
-            heldNotes.splice(heldNotes.indexOf(note), 1);
-            break;
-        case 0x90: // Note On
-            if (velocity > 0) {
-                // Add note to held notes if it's not already there
-                if (!heldNotes.includes(note)) {
-                    heldNotes.push(note);
-                }
-            } else {
-                // Velocity 0 is treated as Note Off
-                heldNotes.splice(heldNotes.indexOf(note), 1);
-            }
-            break;
-    }
+  switch (command) {
+    case 0x80: // Note Off
+      heldNotes.splice(heldNotes.indexOf(note), 1);
+      break;
+    case 0x90: // Note On
+      if (velocity > 0) {
+        // Add note to held notes if it's not already there
+        if (!heldNotes.includes(note)) {
+          heldNotes.push(note);
+        }
+      } else {
+        // Velocity 0 is treated as Note Off
+        heldNotes.splice(heldNotes.indexOf(note), 1);
+      }
+      break;
+  }
 
-    updateChord();
+  updateChord();
 };
 
 /**
@@ -72,16 +85,16 @@ const onMIDIMessage = (event) => {
  * Displays an error message if access is denied.
  */
 const startMIDI = async () => {
-    try {
-        const access = await navigator.requestMIDIAccess();
-        for (let input of access.inputs.values()) {
-            input.onmidimessage = onMIDIMessage;
-        }
-        chordDisplay.textContent = "Play a chord!";
-    } catch (e) {
-        chordDisplay.textContent = "MIDI access denied.";
-        console.error(e);
+  try {
+    const access = await navigator.requestMIDIAccess();
+    for (let input of access.inputs.values()) {
+      input.onmidimessage = onMIDIMessage;
     }
+    chordDisplay.textContent = "Play a chord!";
+  } catch (e) {
+    chordDisplay.textContent = "MIDI access denied.";
+    console.error(e);
+  }
 };
 
 // Start listening for MIDI input when the page loads
